@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_info.css') }}">
+    <title>Information Page</title>
+</head>
+<body>
+    <header>
+        <h1>FITTAB</h1>
+        <nav>
+            <a href="info">Home</a>
+            <a href="#">Information</a>
+            <a href="#">Various Exercises</a>
+            <a href="#">Diet Plan</a>
+            <div class="profile-dropdown">
+                <button class="profile-button">Profile &#9662;</button>
+                <div class="dropdown-content">
+                    <a href="/profile">Profile</a>
+                    <a href="#">Settings</a>
+                    <a href="/">Logout</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="content">
+        <h2>ABOUT US</h2>
+        <p id='p'>
+            Welcome to FITTAB, where we blend the latest in technology with expert guidance to revolutionize<br>
+             your fitness journey. Specializing in personalized advice and exercise guidance under the supervision,<br>
+              of Artificial Intelligence, we ensure every workout is optimized for your goals and tailored to your<br>
+               unique fitness level. Whether you're a beginner looking to start your fitness journey or a seasoned<br>
+                athlete aiming to reach new heights, our AI-driven approach delivers precise insights and actionable<br>
+                 plans to help you achieve sustainable results. Join us and discover the future of fitness, <br>
+                 where innovation meets personalized wellnes
+        </p>
+        <h3>Additional Section</h3>
+         <P>this product is non profitable </P>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Website Name. All rights reserved.</p>
+    </footer>
+</body>
+</html>

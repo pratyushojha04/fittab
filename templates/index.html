@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/js.js') }}"></script>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <div id="loginForm">
+            <h2>Login</h2>
+            <form onsubmit="login(event)">
+                <input type="email" placeholder="Email" id="email" required>
+                <input type="password" placeholder="Password" id="password" required>
+                <button type="submit">Login</button>
+            </form>
+            <div class="extra-options">
+                <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p>
+                <p>Or continue as a <a href="{{ url_for('guest_info') }}">Guest</a></p>
+            </div>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div id="signUpForm" class="hidden">
+            <h2>Sign Up</h2>
+            <form method="POST" action="{{ url_for('register') }}">
+                <input type="text" placeholder="Username" name="name" required>
+                <input type="email" placeholder="Email" name="email" required>
+                <input type="password" placeholder="Password" name="password" required>
+                <input type="number" placeholder="Age" name="age" required>
+                <input type="number" placeholder="Height" name="height" required>
+                <input type="number" placeholder="Weight" name="weight" required>
+
+
+                <button type="submit">Sign Up</button>
+            </form>
+            <div class="extra-options">
+                <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+                <p>Or continue as a <a href="{{ url_for('guest_info') }}">Guest</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSignUp() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signUpForm').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('signUpForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        function login(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            fetch('{{ url_for("login") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ email, password })
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = '{{ url_for("info") }}';
+                } else {
+                    alert('Login failed. Please try again.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

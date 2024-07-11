@@ -1,0 +1,83 @@
+/* Basic styling for header and footer */
+body {
+    background-color: lightgreen;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+header {
+    background-color: #14db9c;
+    color: #050101;
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+nav {
+    display: flex;
+    align-items: center;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+nav a {
+    color: #3102b1;
+    text-decoration: none;
+    padding: 10px;
+}
+nav a:hover {
+    text-decoration: underline;
+}
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+    margin-right: 20px;
+}
+.profile-button {
+    background-color: #333;
+    color: #06a656;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 120px;
+    z-index: 1;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+.dropdown-content a:hover {
+    background-color: #28bf20;
+}
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.content {
+    padding: 20px;
+    text-align: center; /* Center align all text within .content */
+}
+
+.content p {
+    text-align: center; /* Center align paragraphs within .content */
+    margin-bottom: 20px; /* Optional: Add margin to separate paragraphs */
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
