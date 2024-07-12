@@ -2,11 +2,11 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color:lightgreen ;
+    background: linear-gradient(to right, #7f2d18, #0e1b26);
 }
 
 header {
-    background-color: #14db9c;
+    background: linear-gradient(to left, #43160a, #04080b);
     color: #050101;
     padding: 10px;
     display: flex;
@@ -20,7 +20,7 @@ nav {
 }
 
 nav a {
-    color: #3102b1;
+    color: #c6bde0;
     text-decoration: none;
     padding: 10px;
     margin: 0 5px;
@@ -86,7 +86,7 @@ ul {
 }
 
 footer {
-    background-color: #14db9c;
+    background-color: #120b0b;
     color: #050101;
     text-align: center;
     padding: 10px;

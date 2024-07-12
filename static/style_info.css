@@ -1,13 +1,13 @@
 /* Basic styling for header and footer */
 body {
     color: #333;
-    background-color: #96d7c2;
+    background: linear-gradient(to right, #7f2d18, #386b94);
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
 header {
-    background-color: #06f1a7;
+    background: linear-gradient(to left, #43160a, #04080b);
     color: #050101;
     padding: 10px;
     text-align: center;
@@ -24,7 +24,7 @@ nav {
     padding: 0;
 }
 nav a {
-    color: #3102b1;
+    color: #cac0e5;
     text-decoration: none;
     padding: 10px;
 }
@@ -89,9 +89,10 @@ nav a:hover {
 .content p {
     text-align: center; /* Center align paragraphs within .content */
     margin-bottom: 20px; /* Optional: Add margin to separate paragraphs */
+    color: black;
 }
 footer {
-    background-color: #333;
+    background-color: #120b0b;
     color: #fff;
     text-align: center;
     padding: 10px;
