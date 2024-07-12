@@ -8,7 +8,7 @@ html, body {
 }
 
 header {
-    background-color: #14db9c;
+    background-color: #3d160f;
     color: #050101;
     padding: 10px;
     text-align: center;
@@ -19,6 +19,7 @@ header {
 
 header h1 {
     margin: 0;
+    color: rgb(175, 181, 240);
 }
 
 nav {
@@ -30,7 +31,7 @@ nav {
 }
 
 nav a {
-    color: #3102b1;
+    color: #b1a5d1;
     text-decoration: none;
     padding: 10px;
 }
