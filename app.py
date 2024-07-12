@@ -100,5 +100,14 @@ def update_profile():
     else:
         return redirect(url_for('index'))
 
+@app.route('/diet')
+def diet():
+    if 'user_id' in session:
+        user = User.query.filter_by(id=session['user_id']).first()
+        return render_template('diet.html', user=user)
+    else:
+        return redirect(url_for('index'))
+
+
 if __name__ == '__main__':
     app.run(debug=True)

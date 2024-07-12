@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_diet.css') }}">
+    <title>Diet Plan</title>
+</head>
+<body>
+    <header>
+        <h1>FITTAB</h1>
+        <nav>
+            <a href="{{ url_for('info') }}">Home</a>
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('diet') }}">Diet Plan</a>
+            <div class="profile-dropdown">
+                <button class="profile-button">Profile &#9662;</button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('profile') }}">Profile</a>
+                    <a href="#">Settings</a>
+                    <a href="{{ url_for('index') }}">Logout</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="content">
+        <h2>Personalized Diet Plan</h2>
+        
+        {% if user %}
+            {% set bmi = (user.weight / ((user.height / 100) ** 2)) | round(2) %}
+            <p><strong>Name:</strong> {{ user.name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Age:</strong> {{ user.age }}</p>
+            <p><strong>Height:</strong> {{ user.height }} cm</p>
+            <p><strong>Weight:</strong> {{ user.weight }} kg</p>
+            <p><strong>BMI:</strong> {{ bmi }}</p>
+            <p><strong>BMI Status:</strong>
+                {% if bmi < 19 %}
+                    Underweight
+                {% elif bmi >= 19 and bmi <= 25 %}
+                    Normal
+                {% else %}
+                    Overweight
+                {% endif %}
+            </p>
+
+            <h3>Diet Suggestions</h3>
+            {% if bmi < 19 %}
+                <p>You are underweight. Here are some diet suggestions to help you gain weight:</p>
+                <ul>
+                    <li>Eat more frequently. Have 5-6 small meals throughout the day.</li>
+                    <li>Include nutrient-rich foods in your diet, such as whole grains, lean proteins, and healthy fats.</li>
+                    <li>Drink high-calorie smoothies and shakes.</li>
+                    <li>Snack on nuts, seeds, and dried fruits.</li>
+                    <li>Stay hydrated and avoid skipping meals.</li>
+                </ul>
+            {% elif bmi >= 19 and bmi <= 25 %}
+                <p>You have a normal BMI. Here are some diet suggestions to maintain your healthy weight:</p>
+                <ul>
+                    <li>Maintain a balanced diet with a variety of foods from all food groups.</li>
+                    <li>Eat plenty of fruits and vegetables.</li>
+                    <li>Include lean proteins, whole grains, and healthy fats in your meals.</li>
+                    <li>Stay hydrated by drinking plenty of water.</li>
+                    <li>Avoid sugary drinks and excessive junk food.</li>
+                </ul>
+            {% else %}
+                <p>You are overweight. Here are some diet suggestions to help you lose weight:</p>
+                <ul>
+                    <li>Eat more fruits and vegetables.</li>
+                    <li>Choose whole grains over refined grains.</li>
+                    <li>Include lean proteins, such as chicken, fish, beans, and legumes.</li>
+                    <li>Avoid sugary drinks and opt for water or herbal teas.</li>
+                    <li>Reduce your intake of high-calorie, low-nutrient foods.</li>
+                    <li>Practice portion control and avoid eating late at night.</li>
+                </ul>
+            {% endif %}
+        {% else %}
+            <p>No user data available. Please <a href="{{ url_for('index') }}">log in</a> to view your personalized diet plan.</p>
+        {% endif %}
+    </div>
+
+    <footer>
+        <p>&copy; 2024 FITTAB. All rights reserved.</p>
+    </footer>
+</body>
+</html>
