@@ -3,7 +3,7 @@ html, body {
     margin: 0;
     display: grid;
     place-items: center;
-    background: linear-gradient(to right, #7f2d18, #20303d); /* Gradient background */
+    background: linear-gradient(to right, #853a27, #2d4254); /* Gradient background */
 }
 
 .container {
