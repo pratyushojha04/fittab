@@ -6,7 +6,6 @@ html, body {
     background: linear-gradient(to right, #7f2d18, #20303d); /* Gradient background */
 }
 
-
 .container {
     text-align: center;
     background-color: #3c6193;
@@ -40,10 +39,12 @@ html, body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
 }
 
 .container form button:hover {
     background-color: #0056b3;
+    transform: scale(1.05);
 }
 
 .guest-mode {
@@ -58,4 +59,14 @@ html, body {
 
 .guest-mode a:hover {
     text-decoration: underline;
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }

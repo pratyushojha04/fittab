@@ -10,12 +10,16 @@
         .hidden {
             display: none;
         }
+
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container fade-in">
         <!-- Login Form -->
-        <div id="loginForm">
+        <div id="loginForm" class="fade-in">
             <h2>Login</h2>
             <form onsubmit="login(event)">
                 <input type="email" placeholder="Email" id="email" required>
@@ -29,7 +33,7 @@
         </div>
 
         <!-- Sign Up Form -->
-        <div id="signUpForm" class="hidden">
+        <div id="signUpForm" class="hidden fade-in">
             <h2>Sign Up</h2>
             <form method="POST" action="{{ url_for('register') }}">
                 <input type="text" placeholder="Username" name="name" required>
@@ -38,8 +42,6 @@
                 <input type="number" placeholder="Age" name="age" required>
                 <input type="number" placeholder="Height" name="height" required>
                 <input type="number" placeholder="Weight" name="weight" required>
-
-
                 <button type="submit">Sign Up</button>
             </form>
             <div class="extra-options">
@@ -52,12 +54,16 @@
     <script>
         function showSignUp() {
             document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('fade-in');
             document.getElementById('signUpForm').classList.remove('hidden');
+            document.getElementById('signUpForm').classList.add('fade-in');
         }
 
         function showLogin() {
             document.getElementById('signUpForm').classList.add('hidden');
+            document.getElementById('signUpForm').classList.remove('fade-in');
             document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('loginForm').classList.add('fade-in');
         }
 
         function login(event) {

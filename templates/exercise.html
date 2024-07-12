@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise Monitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_excercise.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Exercise Monitor</h1>
+        <nav>
+            <a href="{{ url_for('info') }}">Home</a>
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('diet') }}">Diet Plan</a>
+            
+            <a href="{{ url_for('index') }}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="content">
+        <h2>Monitor Your Exercise Posture</h2>
+        <div id="camera">
+            <!-- Placeholder for the camera feed -->
+        </div>
+        <button onclick="startCamera()">Start Camera</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function startCamera() {
+            // JavaScript code to access the camera and connect it to the notebook for posture monitoring
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    const video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.play();
+                    document.getElementById('camera').appendChild(video);
+                })
+                .catch(err => {
+                    console.error('Error accessing the camera: ', err);
+                });
+        }
+    </script>
+</body>
+</html>

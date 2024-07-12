@@ -7,7 +7,7 @@ body {
 
 header {
     background: linear-gradient(to left, #43160a, #04080b);
-    color: #050101;
+    color: #eacaca;
     padding: 10px;
     display: flex;
     justify-content: space-between;

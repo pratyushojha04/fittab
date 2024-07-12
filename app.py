@@ -126,5 +126,9 @@ def diet():
     else:
         return redirect(url_for('index'))
 
+@app.route('/Various Excercises')
+def excerise():
+    return render_template('exercise.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
