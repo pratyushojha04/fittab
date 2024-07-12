@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Link to external CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style_profile.css') }}">
     <title>Profile Page</title>
 </head>
@@ -32,6 +31,9 @@
         {% if user %}
         <div id="profile-display">
             <h3>Profile Information</h3>
+            {% if user.profile_picture %}
+                <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Profile Picture" style="width: 150px; height: 150px; border-radius: 50%;">
+            {% endif %}
             <p><strong>Name:</strong> {{ user.name }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
             <p><strong>Age:</strong> {{ user.age }}</p>
@@ -54,7 +56,7 @@
         </div>
         
         <!-- Form for user to edit their information -->
-        <form id="profile-form" action="{{ url_for('update_profile') }}" method="post" style="display:none;">
+        <form id="profile-form" action="{{ url_for('update_profile') }}" method="post" enctype="multipart/form-data" style="display:none;">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" value="{{ user.name }}" required><br><br>
             
@@ -69,6 +71,9 @@
             
             <label for="height">Height (cm):</label>
             <input type="number" id="height" name="height" value="{{ user.height }}" required><br><br>
+            
+            <label for="profile_picture">Profile Picture:</label>
+            <input type="file" id="profile_picture" name="profile_picture"><br><br>
             
             <input type="submit" value="Update">
         </form>

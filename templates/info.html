@@ -11,34 +11,39 @@
     <header>
         <h1>FITTAB</h1>
         <nav>
-            <a href="info">Home</a>
+            <a href="{{ url_for('info') }}">Home</a>
             <a href="#">Information</a>
             <a href="#">Various Exercises</a>
-            <a href="/diet">Diet Plan</a>
+            <a href="{{ url_for('diet') }}">Diet Plan</a>
             <div class="profile-dropdown">
                 <button class="profile-button">Profile &#9662;</button>
                 <div class="dropdown-content">
-                    <a href="/profile">Profile</a>
+                    <a href="{{ url_for('profile') }}">Profile</a>
                     <a href="#">Settings</a>
-                    <a href="/">Logout</a>
+                    <a href="{{ url_for('index') }}">Logout</a>
                 </div>
             </div>
         </nav>
+        {% if user and user.profile_picture %}
+        <div class="profile-picture">
+            <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Profile Picture">
+        </div>
+        {% endif %}
     </header>
 
     <div class="content">
         <h2>ABOUT US</h2>
         <p id='p'>
             Welcome to FITTAB, where we blend the latest in technology with expert guidance to revolutionize<br>
-             your fitness journey. Specializing in personalized advice and exercise guidance under the supervision,<br>
-              of Artificial Intelligence, we ensure every workout is optimized for your goals and tailored to your<br>
-               unique fitness level. Whether you're a beginner looking to start your fitness journey or a seasoned<br>
-                athlete aiming to reach new heights, our AI-driven approach delivers precise insights and actionable<br>
-                 plans to help you achieve sustainable results. Join us and discover the future of fitness, <br>
-                 where innovation meets personalized wellnes
+            your fitness journey. Specializing in personalized advice and exercise guidance under the supervision,<br>
+            of Artificial Intelligence, we ensure every workout is optimized for your goals and tailored to your<br>
+            unique fitness level. Whether you're a beginner looking to start your fitness journey or a seasoned<br>
+            athlete aiming to reach new heights, our AI-driven approach delivers precise insights and actionable<br>
+            plans to help you achieve sustainable results. Join us and discover the future of fitness, <br>
+            where innovation meets personalized wellness
         </p>
         <h3>Additional Section</h3>
-         <P>this product is non profitable </P>
+        <p>this product is non profitable</p>
     </div>
 
     <footer>
