@@ -28,6 +28,8 @@ pip install -r requirements.txt
 - Flask
 - SQLAlchemy
 - SQLite
+- mediapip
+- open-cv
 - HTML/CSS
 - JavaScript (minimal)
 
