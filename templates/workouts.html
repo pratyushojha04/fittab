@@ -5,6 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Workouts</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style_workout.css') }}">
+
+
+    <script>
+        // Function to convert workouts data to CSV format
+        function convertToCSV(workouts) {
+            let csvContent = "Date,Exercise,Sets,Reps,Weight (kg)\n";
+            workouts.forEach(function(workout) {
+                let csvLine = `${workout.date},${workout.exercise},${workout.sets},${workout.reps},${workout.weight ? workout.weight : ''}\n`;
+                csvContent += csvLine;
+            });
+            return csvContent;
+        }
+    
+        // Fetch workouts data from the server-side rendered context
+        let workoutsData = JSON.parse('{{ workouts | tojson | safe }}');
+    
+        // Prepare CSV data and set it to the hidden input field
+        document.getElementById('csv_data').value = convertToCSV(workoutsData);
+    </script>
+
+    
+
+
+    
 </head>
 <body>
     <nav>
@@ -50,6 +74,19 @@
             </form>
         </div>
 
+
+
+
+        <!-- Workout List -->
+
+
+
+
+
+
+
+
+
         <!-- Workout List -->
         <div>
             <h2>Your Workout History</h2>
@@ -58,6 +95,10 @@
                     <li>{{ workout.date }} - {{ workout.exercise }}: {{ workout.sets }} sets of {{ workout.reps }} reps {% if workout.weight %} at {{ workout.weight }} kg {% endif %}</li>
                 {% endfor %}
             </ul>
+            <form id="downloadForm" action="{{ url_for('download_csv') }}" method="post">
+                <input type="hidden" name="csv_data" id="csv_data">
+                <button type="submit">Download CSV</button>
+            </form>
         </div>
     </div>
 </body>

@@ -66,6 +66,21 @@ class Workout(db.Model):
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
 
     user = db.relationship('User', back_populates='workouts')
+    def __init__(self, date, exercise, sets, reps, weight=None):
+        self.date = date
+        self.exercise = exercise
+        self.sets = sets
+        self.reps = reps
+        self.weight = weight
+
+    def to_dict(self):
+        return {
+            'date': self.date.strftime('%Y-%m-%d %H:%M:%S'),
+            'exercise': self.exercise,
+            'sets': self.sets,
+            'reps': self.reps,
+            'weight': self.weight
+        }
 
 User.workouts = db.relationship('Workout', order_by=Workout.id, back_populates='user')
 
@@ -91,10 +106,31 @@ def workouts():
             return redirect(url_for('workouts'))
 
         user = User.query.filter_by(id=user_id).first()
-        workouts = Workout.query.filter_by(user_id=user_id).all()
+        workout_objects = Workout.query.filter_by(user_id=user_id).all()
+        workouts = [workout.to_dict() for workout in workout_objects]
         return render_template('workouts.html', user=user, workouts=workouts)
     else:
         return redirect(url_for('index'))
+
+
+
+@app.route('/download_csv', methods=['POST'])
+def download_csv():
+    csv_data = request.form['csv_data']
+
+    # Create a response with CSV as a file attachment
+    output = io.StringIO()
+    output.write(csv_data)
+    output.seek(0)
+
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=workout_history.csv"}
+    )
+
+
+
 
 @app.route('/')
 def index():
