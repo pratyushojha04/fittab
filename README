@@ -1,0 +1,44 @@
+Hi there,
+I am Pratyush ojha 
+
+# FITTAB
+
+## About
+Welcome to FITTAB, a personalized fitness assistant designed to optimize your fitness journey. This Flask application offers user registration, login, profile management, and the ability to generate downloadable PDF diet plans based on your personal data.
+
+## Installation
+1. Clone the repository:
+2. Install dependencies using pip:
+
+pip install -r requirements.txt
+
+## Getting Started
+1. Set up the Flask application:
+    python app.py      (in the cmd)
+2. Open your web browser and navigate to [http://localhost:5000](http://localhost:5000).
+
+## Features
+- **User Authentication:** Register, login securely, and manage your profile.
+- **Profile Management:** Update personal information and upload profile pictures.
+- **Exercise Section:** Explore various exercise routines.
+- **Diet Plan Generation:** Generate personalized PDF diet plans based on your BMI and health status.
+
+## Technologies Used
+- Python
+- Flask
+- SQLAlchemy
+- SQLite
+- HTML/CSS
+- JavaScript (minimal)
+
+
+## Contributing
+Contributions are welcome! Fork the repository, create a pull request with your enhancements.
+
+## Author
+- Created by Pratyush Ojha
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+

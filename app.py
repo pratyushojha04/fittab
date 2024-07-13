@@ -151,7 +151,7 @@ def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 def gen_frames():
-    camera = cv2.VideoCapture(0)  # Use 0 for web camera
+    camera = cv2.VideoCapture(0)  
     while True:
         success, frame = camera.read()
         if not success:

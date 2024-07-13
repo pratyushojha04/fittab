@@ -1,0 +1,8 @@
+reportlab 
+Flask 
+opencv-python 
+SQLAlchemy 
+mediapipe 
+numpy 
+Flask-Migrate 
+Werkzeug 
