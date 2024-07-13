@@ -237,7 +237,7 @@ def generate_pdf():
 # Add a new route for the nearest gym
 @app.route('/nearest_gym')
 def nearest_gym():
-    api_key = 'AIzaSyAphEsU0X1_p0m6XX1sLp9K69fUoQ92HP4'
+    api_key = 'AIzaSyB84d06guOSJUZrXXyd-3RuZEFi7YJYRt0'
     return render_template('nearest_gym.html', api_key=api_key)
 
 
