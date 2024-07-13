@@ -10,7 +10,7 @@ from dumbel_curl_script import PoseDetector
 import io
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-
+from datetime import datetime
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3'
@@ -54,6 +54,47 @@ class User(db.Model):
         self.height = height
         self.weight = weight
         self.profile_picture = profile_picture
+        
+
+class Workout(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    exercise = db.Column(db.String(100), nullable=False)
+    sets = db.Column(db.Integer, nullable=False)
+    reps = db.Column(db.Integer, nullable=False)
+    weight = db.Column(db.Float, nullable=True)
+    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+
+    user = db.relationship('User', back_populates='workouts')
+
+User.workouts = db.relationship('Workout', order_by=Workout.id, back_populates='user')
+
+
+
+
+@app.route('/workouts', methods=['GET', 'POST'])
+def workouts():
+    if 'user_id' in session:
+        user_id = session['user_id']
+
+        if request.method == 'POST':
+            exercise = request.form['exercise']
+            sets = request.form['sets']
+            reps = request.form['reps']
+            weight = request.form['weight'] if request.form['weight'] else None
+            
+            new_workout = Workout(user_id=user_id, exercise=exercise, sets=sets, reps=reps, weight=weight)
+            db.session.add(new_workout)
+            db.session.commit()
+            
+            flash('Workout logged successfully')
+            return redirect(url_for('workouts'))
+
+        user = User.query.filter_by(id=user_id).first()
+        workouts = Workout.query.filter_by(user_id=user_id).all()
+        return render_template('workouts.html', user=user, workouts=workouts)
+    else:
+        return redirect(url_for('index'))
 
 @app.route('/')
 def index():
@@ -80,7 +121,6 @@ def register():
     age = request.form['age']
     height = request.form['height']
     weight = request.form['weight']
-
     if User.query.filter_by(email=email).first():
         flash('Email already registered')
         return redirect(url_for('index'))

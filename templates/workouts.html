@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Workouts</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_workout.css') }}">
+
+
+
+    <h1 style="background: linear-gradient(to left, #200b05, #04080b);">FITTAB</h1>
+    <nav>
+        <a href="{{ url_for('info') }}">Home</a>
+        <a href="#">Info</a>
+        <a href="{{ url_for('exercise') }}">Various Exercises</a>
+        <a href="{{ url_for('nearest_gym') }}">Nearest GYM</a>
+        <a href="{{ url_for('profile') }}">Profile</a>
+        <a href="/diet">Diet Plan</a>
+        <div class="profile-dropdown">
+            <button class="profile-button">Profile &#9662;</button>
+            <div class="dropdown-content">
+                <a href="{{ url_for('profile') }}">Profile</a>
+                <a href="#">Settings</a>
+                <a href="{{ url_for('index') }}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+
+
+</head>
+<body>
+    <h1>Your Workouts</h1>
+
+    <!-- Log Workout Form -->
+    <div>
+        <h2>Log a New Workout</h2>
+        <form method="POST" action="{{ url_for('workouts') }}">
+            <label for="exercise">Exercise:</label>
+            <input type="text" id="exercise" name="exercise" required>
+            <br>
+            <label for="sets">Sets:</label>
+            <input type="number" id="sets" name="sets" required>
+            <br>
+            <label for="reps">Reps:</label>
+            <input type="number" id="reps" name="reps" required>
+            <br>
+            <label for="weight">Weight (optional):</label>
+            <input type="number" id="weight" name="weight" step="0.1">
+            <br>
+            <button type="submit">Log Workout</button>
+        </form>
+    </div>
+
+    <!-- Workout List -->
+    <div>
+        <h2>Your Workout History</h2>
+        <ul>
+            {% for workout in workouts %}
+                <li>{{ workout.date }} - {{ workout.exercise }}: {{ workout.sets }} sets of {{ workout.reps }} reps {% if workout.weight %} at {{ workout.weight }} kg {% endif %}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

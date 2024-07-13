@@ -12,8 +12,9 @@
         <nav>
             <a href="{{ url_for('info') }}">Home</a>
             <a href="#">Info</a>
-            <a href="/exercise">Various Exercises</a>
+            <a href="{{ url_for('exercise') }}">Various Exercises</a>
             <a href="{{ url_for('nearest_gym') }}">Nearest GYM</a>
+            <a href="{{ url_for('workouts') }}">Workout History</a>
             <a href="/diet">Diet Plan</a>
             <div class="profile-dropdown">
                 <button class="profile-button">Profile &#9662;</button>
