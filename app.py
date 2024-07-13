@@ -1,12 +1,12 @@
+# app.py
 import os
 import cv2
-import numpy as np
-import tensorflow as tf
-from flask import Flask, render_template, request, redirect, url_for, session, Response, flash
+from flask import Flask, render_template, Response, redirect, url_for, session, flash,request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+from dumbel_curl_script import PoseDetector
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -21,6 +21,8 @@ app.config['SESSION_COOKIE_SECURE'] = True
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+pose_detector = PoseDetector()
 
 # Create the uploads folder if it doesn't exist
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -147,35 +149,16 @@ def video_feed():
 
 def gen_frames():
     camera = cv2.VideoCapture(0)  # Use 0 for web camera
-
     while True:
         success, frame = camera.read()
         if not success:
             break
         else:
-            frame = process_frame(frame)
-
+            frame = pose_detector.process_frame(frame)
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
-
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-def process_frame(frame):
-    # Resize and preprocess the frame
-    model = tf.keras.models.load_model('path/to/your/model.h5')
-    input_frame = cv2.resize(frame, (224, 224))  # Assuming the model takes 224x224 input size
-    input_frame = np.expand_dims(input_frame, axis=0)  # Add batch dimension
-    input_frame = input_frame / 255.0  # Normalize if required by your model
-
-    # Make predictions
-    predictions = model.predict(input_frame)
-    
-    # Process predictions and draw results on the frame
-    # Add your prediction processing and drawing code here
-    # For example, you can draw bounding boxes, labels, etc.
-
-    return frame  # Return the frame with drawn results
 
 if __name__ == '__main__':
     app.run(debug=True)
