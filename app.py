@@ -232,5 +232,14 @@ def generate_pdf():
     else:
         return redirect(url_for('index'))
 
+
+# Add a new route for the nearest gym
+# Add a new route for the nearest gym
+@app.route('/nearest_gym')
+def nearest_gym():
+    api_key = 'AIzaSyAphEsU0X1_p0m6XX1sLp9K69fUoQ92HP4'
+    return render_template('nearest_gym.html', api_key=api_key)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
