@@ -11,6 +11,8 @@ import io
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from datetime import datetime
+import csv
+from flask import Response, session,make_response
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3'
@@ -63,11 +65,12 @@ class Workout(db.Model):
     sets = db.Column(db.Integer, nullable=False)
     reps = db.Column(db.Integer, nullable=False)
     weight = db.Column(db.Float, nullable=True)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+    date = db.Column(db.DateTime, default=datetime.now())
 
     user = db.relationship('User', back_populates='workouts')
-    def __init__(self, date, exercise, sets, reps, weight=None):
-        self.date = date
+    def __init__(self,user_id, date, exercise, sets, reps, weight=None):
+        self.user_id = user_id = user_id
+        self.date = date if date else datetime.now()
         self.exercise = exercise
         self.sets = sets
         self.reps = reps
@@ -85,7 +88,17 @@ class Workout(db.Model):
 User.workouts = db.relationship('Workout', order_by=Workout.id, back_populates='user')
 
 
-
+def save_to_csv(workout):
+    fieldnames = ['date', 'exercise', 'sets', 'reps', 'weight']
+    file_exists = os.path.isfile('workouts.csv')
+    
+    with open('workouts.csv', mode='a', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        
+        if not file_exists:
+            writer.writeheader()
+        
+        writer.writerow(workout.to_dict())
 
 @app.route('/workouts', methods=['GET', 'POST'])
 def workouts():
@@ -98,9 +111,10 @@ def workouts():
             reps = request.form['reps']
             weight = request.form['weight'] if request.form['weight'] else None
             
-            new_workout = Workout(user_id=user_id, exercise=exercise, sets=sets, reps=reps, weight=weight)
+            new_workout = Workout(user_id=user_id,date= datetime.now(),exercise=exercise, sets=sets, reps=reps, weight=weight)
             db.session.add(new_workout)
             db.session.commit()
+            save_to_csv(new_workout)
             
             flash('Workout logged successfully')
             return redirect(url_for('workouts'))
@@ -114,20 +128,26 @@ def workouts():
 
 
 
-@app.route('/download_csv', methods=['POST'])
-def download_csv():
-    csv_data = request.form['csv_data']
+@app.route('/download_workouts', methods=['GET'])
+def download_workouts():
+    if 'user_id' in session:
+        user_id = session['user_id']
+        workouts = Workout.query.filter_by(user_id=user_id).all()
 
-    # Create a response with CSV as a file attachment
-    output = io.StringIO()
-    output.write(csv_data)
-    output.seek(0)
+        # Convert the workouts to a list of dictionaries
+        workout_dicts = [workout.to_dict() for workout in workouts]
 
-    return Response(
-        output,
-        mimetype="text/csv",
-        headers={"Content-Disposition": "attachment;filename=workout_history.csv"}
-    )
+        # Create the CSV
+        si = io.StringIO()
+        writer = csv.DictWriter(si, fieldnames=['date', 'exercise', 'sets', 'reps', 'weight'])
+        writer.writeheader()
+        writer.writerows(workout_dicts)
+        output = make_response(si.getvalue())
+        output.headers['Content-Disposition'] = 'attachment; filename=workouts.csv'
+        output.headers['Content-type'] = 'text/csv'
+        return output
+    else:
+        return redirect(url_for('index'))
 
 
 
