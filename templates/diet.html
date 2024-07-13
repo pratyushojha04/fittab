@@ -11,8 +11,8 @@
         <h1>FITTAB</h1>
         <nav>
             <a href="{{ url_for('info') }}">Home</a>
-            <a href="{{ url_for('profile') }}">Profile</a>
-            <a href="{{ url_for('diet') }}">Diet Plan</a>
+            
+            <a href="{{ url_for('exercise') }}">Various Exercises</a>
             
             <div class="profile-dropdown">
                 <button class="profile-button">Profile &#9662;</button>
@@ -76,6 +76,11 @@
                     <li>Practice portion control and avoid eating late at night.</li>
                 </ul>
             {% endif %}
+
+            <form action="{{ url_for('generate_pdf') }}" method="get">
+                <button type="submit">Download PDF</button>
+            </form>
+
         {% else %}
             <p>No user data available. Please <a href="{{ url_for('index') }}">log in</a> to view your personalized diet plan.</p>
         {% endif %}

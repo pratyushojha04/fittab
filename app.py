@@ -1,12 +1,15 @@
 # app.py
 import os
 import cv2
-from flask import Flask, render_template, Response, redirect, url_for, session, flash,request
+from flask import Flask, render_template, Response, redirect, url_for, session, flash, request, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from dumbel_curl_script import PoseDetector
+import io
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -159,6 +162,75 @@ def gen_frames():
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/generate_pdf')
+def generate_pdf():
+    if 'user_id' in session:
+        user = User.query.filter_by(id=session['user_id']).first()
+        bmi = round(user.weight / ((user.height / 100) ** 2), 2)
+
+        # Create a file-like buffer to receive PDF data
+        buffer = io.BytesIO()
+
+        # Create the PDF object, using the buffer as its "file."
+        pdf = canvas.Canvas(buffer, pagesize=letter)
+        width, height = letter
+
+        # Draw the user data on the PDF
+        pdf.drawString(100, height - 100, f"Name: {user.name}")
+        pdf.drawString(100, height - 120, f"Email: {user.email}")
+        pdf.drawString(100, height - 140, f"Age: {user.age}")
+        pdf.drawString(100, height - 160, f"Height: {user.height} cm")
+        pdf.drawString(100, height - 180, f"Weight: {user.weight} kg")
+        pdf.drawString(100, height - 200, f"BMI: {bmi}")
+
+        # Determine BMI status
+        if bmi < 19:
+            bmi_status = "Underweight"
+            diet_suggestions = [
+                "Eat more frequently. Have 5-6 small meals throughout the day.",
+                "Include nutrient-rich foods in your diet, such as whole grains, lean proteins, and healthy fats.",
+                "Drink high-calorie smoothies and shakes.",
+                "Snack on nuts, seeds, and dried fruits.",
+                "Stay hydrated and avoid skipping meals."
+            ]
+        elif bmi >= 19 and bmi <= 25:
+            bmi_status = "Normal"
+            diet_suggestions = [
+                "Maintain a balanced diet with a variety of foods from all food groups.",
+                "Eat plenty of fruits and vegetables.",
+                "Include lean proteins, whole grains, and healthy fats in your meals.",
+                "Stay hydrated by drinking plenty of water.",
+                "Avoid sugary drinks and excessive junk food."
+            ]
+        else:
+            bmi_status = "Overweight"
+            diet_suggestions = [
+                "Eat more fruits and vegetables.",
+                "Choose whole grains over refined grains.",
+                "Include lean proteins, such as chicken, fish, beans, and legumes.",
+                "Avoid sugary drinks and opt for water or herbal teas.",
+                "Reduce your intake of high-calorie, low-nutrient foods.",
+                "Practice portion control and avoid eating late at night."
+            ]
+
+        pdf.drawString(100, height - 220, f"BMI Status: {bmi_status}")
+        pdf.drawString(100, height - 240, "Diet Suggestions:")
+
+        y = height - 260
+        for suggestion in diet_suggestions:
+            pdf.drawString(120, y, f"- {suggestion}")
+            y -= 20
+
+        # Close the PDF object cleanly
+        pdf.showPage()
+        pdf.save()
+
+        # Get the value of the BytesIO buffer and write it to the response
+        buffer.seek(0)
+        return send_file(buffer, as_attachment=True, download_name='diet_plan.pdf', mimetype='application/pdf')
+    else:
+        return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
