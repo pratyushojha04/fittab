@@ -21,11 +21,17 @@ header {
 nav {
     background: linear-gradient(to left, #200b05, #04080b);
     display: flex;
+    justify-content: space-between; /* Added to move links to the right */
     align-items: center;
     list-style-type: none;
     margin: 0;
     padding: 0;
-    flex-wrap: wrap;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* Moves the links to the right */
 }
 
 nav a {
@@ -69,7 +75,7 @@ nav a:hover {
 }
 
 .dropdown-content a:hover {
-    background-color: #28bf20;
+    background-color: #9db6da;
 }
 
 .profile-dropdown:hover .dropdown-content {
