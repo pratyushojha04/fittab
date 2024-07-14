@@ -58,29 +58,16 @@
                     <li>{{ workout.date }} - {{ workout.exercise }}: {{ workout.sets }} sets of {{ workout.reps }} reps {% if workout.weight %} at {{ workout.weight }} kg {% endif %}</li>
                 {% endfor %}
             </ul>
-            <form id="downloadForm" action="{{ url_for('download_workouts') }}" method="post">
-                <input type="hidden" name="csv_data" id="csv_data">
-                <button type="button" onclick="prepareDownload()">Download CSV</button>
+            <form id="downloadForm" action="{{ url_for('download_workouts') }}" method="get">
+                <button type="submit">Download PDF</button>
             </form>
         </div>
     </div>
 
     <script>
-        // Parse the JSON data from the server-side
-        let workoutsdata = JSON.parse('{{ workouts | tojson }}');
-    
-        // Function to prepare CSV data for download
+        // Function to prepare PDF data for download
         function prepareDownload() {
-            let csvContent = "Date,Exercise,Sets,Reps,Weight (kg)\n";
-            workoutsdata.forEach(function(workout) {
-                let csvLine = `${workout.date},${workout.exercise},${workout.sets},${workout.reps},${workout.weight ? workout.weight : ''}\n`;
-                csvContent += csvLine;
-            });
-    
-            // Set CSV data to the hidden input field
-            document.getElementById('csv_data').value = csvContent;
-    
-            // Submit the form for download
+            // Just submit the form to trigger PDF download
             document.getElementById('downloadForm').submit();
         }
     </script>

@@ -1,4 +1,3 @@
-# app.py
 import os
 import cv2
 from flask import Flask, render_template, Response, redirect, url_for, session, flash, request, send_file
@@ -9,10 +8,13 @@ from werkzeug.utils import secure_filename
 from dumbel_curl_script import PoseDetector
 import io
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from datetime import datetime
 import csv
-from flask import Response, session,make_response
+from reportlab.pdfgen import canvas
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3'
@@ -51,7 +53,7 @@ class User(db.Model):
     def __init__(self, name, email, password, age, height, weight, profile_picture=None):
         self.name = name
         self.email = email
-        self.password = generate_password_hash(password)
+        self.password = (password)
         self.age = age
         self.height = height
         self.weight = weight
@@ -68,8 +70,8 @@ class Workout(db.Model):
     date = db.Column(db.DateTime, default=datetime.now())
 
     user = db.relationship('User', back_populates='workouts')
-    def __init__(self,user_id, date, exercise, sets, reps, weight=None):
-        self.user_id = user_id = user_id
+    def __init__(self, user_id, date, exercise, sets, reps, weight=None):
+        self.user_id = user_id
         self.date = date if date else datetime.now()
         self.exercise = exercise
         self.sets = sets
@@ -87,19 +89,6 @@ class Workout(db.Model):
 
 User.workouts = db.relationship('Workout', order_by=Workout.id, back_populates='user')
 
-
-def save_to_csv(workout):
-    fieldnames = ['date', 'exercise', 'sets', 'reps', 'weight']
-    file_exists = os.path.isfile('workouts.csv')
-    
-    with open('workouts.csv', mode='a', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        
-        if not file_exists:
-            writer.writeheader()
-        
-        writer.writerow(workout.to_dict())
-
 @app.route('/workouts', methods=['GET', 'POST'])
 def workouts():
     if 'user_id' in session:
@@ -111,10 +100,9 @@ def workouts():
             reps = request.form['reps']
             weight = request.form['weight'] if request.form['weight'] else None
             
-            new_workout = Workout(user_id=user_id,date= datetime.now(),exercise=exercise, sets=sets, reps=reps, weight=weight)
+            new_workout = Workout(user_id=user_id, date=datetime.now(), exercise=exercise, sets=sets, reps=reps, weight=weight)
             db.session.add(new_workout)
             db.session.commit()
-            save_to_csv(new_workout)
             
             flash('Workout logged successfully')
             return redirect(url_for('workouts'))
@@ -126,31 +114,51 @@ def workouts():
     else:
         return redirect(url_for('index'))
 
-
-
 @app.route('/download_workouts', methods=['GET'])
 def download_workouts():
     if 'user_id' in session:
         user_id = session['user_id']
         workouts = Workout.query.filter_by(user_id=user_id).all()
 
-        # Convert the workouts to a list of dictionaries
-        workout_dicts = [workout.to_dict() for workout in workouts]
+        # Create a file-like buffer to receive PDF data
+        buffer = io.BytesIO()
 
-        # Create the CSV
-        si = io.StringIO()
-        writer = csv.DictWriter(si, fieldnames=['date', 'exercise', 'sets', 'reps', 'weight'])
-        writer.writeheader()
-        writer.writerows(workout_dicts)
-        output = make_response(si.getvalue())
-        output.headers['Content-Disposition'] = 'attachment; filename=workouts.csv'
-        output.headers['Content-type'] = 'text/csv'
-        return output
+        # Create the PDF object, using the buffer as its "file."
+        doc = SimpleDocTemplate(buffer, pagesize=letter)
+        elements = []
+
+        # Table data
+        data = [["Date", "Exercise", "Sets", "Reps", "Weight"]]
+        for workout in workouts:
+            data.append([
+                workout.date.strftime('%Y-%m-%d %H:%M:%S'),
+                workout.exercise,
+                workout.sets,
+                workout.reps,
+                workout.weight if workout.weight is not None else "N/A"
+            ])
+
+        # Create the table
+        table = Table(data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        elements.append(table)
+
+        # Build the PDF
+        doc.build(elements)
+        
+        # Return the PDF as a response
+        buffer.seek(0)
+        return send_file(buffer, as_attachment=True, download_name=f'workouts_{user_id}.pdf', mimetype='application/pdf')
     else:
         return redirect(url_for('index'))
-
-
-
 
 @app.route('/')
 def index():
@@ -158,15 +166,20 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    email = user.request.form['email']
-    password = user.request.form['password']
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-    user = User.query.filter_by(email=email).first()
-    if user and check_password_hash(user.password, password):
-        session['user_id'] = user.id
-        return redirect(url_for('info'))
+        user = User.query.filter_by(email=email).first()
+        if user and (user.password, password):
+            session['user_id'] = user.id
+            flash('Login successful!')
+            return redirect(url_for('info'))
+        else:
+            flash('Invalid email or password')
+            return redirect(url_for('index'))
     else:
-        flash('Invalid email or password')
+        flash('Method not allowed')
         return redirect(url_for('index'))
 
 @app.route('/register', methods=['POST'])
@@ -238,16 +251,23 @@ def diet():
     else:
         return redirect(url_for('index'))
 
-@app.route('/exercise')
-def exercise():
-    return render_template('exercise.html')
+@app.route('/update_diet', methods=['POST'])
+def update_diet():
+    if 'user_id' in session:
+        user = User.query.filter_by(id=session['user_id']).first()
+        user.weight = request.form['weight']
+        db.session.commit()
+        return redirect(url_for('diet'))
+    else:
+        return redirect(url_for('index'))
+
 
 @app.route('/video_feed')
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 def gen_frames():
-    camera = cv2.VideoCapture(0)  
+    camera = cv2.VideoCapture(0)
     while True:
         success, frame = camera.read()
         if not success:
@@ -328,14 +348,15 @@ def generate_pdf():
     else:
         return redirect(url_for('index'))
 
-
-# Add a new route for the nearest gym
-# Add a new route for the nearest gym
 @app.route('/nearest_gym')
 def nearest_gym():
     api_key = ''
     return render_template('nearest_gym.html', api_key=api_key)
-
-
+@app.route('/exercise')
+def exercise():
+    return render_template('exercise.html')
 if __name__ == '__main__':
+    # Create all database tables
+    
+
     app.run(debug=True)
