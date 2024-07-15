@@ -3,17 +3,19 @@ import cv2
 from flask import Flask, render_template, Response, redirect, url_for, session, flash, request, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from dumbel_curl_script import PoseDetector
 import io
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
-from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from datetime import datetime
 import csv
 from reportlab.pdfgen import canvas
+
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -28,6 +30,7 @@ app.config['SESSION_COOKIE_SECURE'] = True
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
 
 pose_detector = PoseDetector()
 
@@ -44,7 +47,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
-    password = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(500), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     height = db.Column(db.Integer, nullable=False)
     weight = db.Column(db.Integer, nullable=False)
@@ -53,12 +56,11 @@ class User(db.Model):
     def __init__(self, name, email, password, age, height, weight, profile_picture=None):
         self.name = name
         self.email = email
-        self.password = (password)
+        self.password = generate_password_hash(password)  # Hash the password
         self.age = age
         self.height = height
         self.weight = weight
         self.profile_picture = profile_picture
-        
 
 class Workout(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -70,6 +72,7 @@ class Workout(db.Model):
     date = db.Column(db.DateTime, default=datetime.now())
 
     user = db.relationship('User', back_populates='workouts')
+
     def __init__(self, user_id, date, exercise, sets, reps, weight=None):
         self.user_id = user_id
         self.date = date if date else datetime.now()
@@ -99,11 +102,11 @@ def workouts():
             sets = request.form['sets']
             reps = request.form['reps']
             weight = request.form['weight'] if request.form['weight'] else None
-            
+
             new_workout = Workout(user_id=user_id, date=datetime.now(), exercise=exercise, sets=sets, reps=reps, weight=weight)
             db.session.add(new_workout)
             db.session.commit()
-            
+
             flash('Workout logged successfully')
             return redirect(url_for('workouts'))
 
@@ -153,7 +156,7 @@ def download_workouts():
 
         # Build the PDF
         doc.build(elements)
-        
+
         # Return the PDF as a response
         buffer.seek(0)
         return send_file(buffer, as_attachment=True, download_name=f'workouts_{user_id}.pdf', mimetype='application/pdf')
@@ -166,21 +169,25 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+    email = request.form.get('email')
+    password = request.form.get('password')
 
-        user = User.query.filter_by(email=email).first()
-        if user and (user.password, password):
+    user = User.query.filter_by(email=email).first()
+    if user:
+        print("Stored hashed password:", user.password)  # Debug print
+        print("Provided password:", password)  # Debug print
+        if check_password_hash(user.password, password):
             session['user_id'] = user.id
             flash('Login successful!')
             return redirect(url_for('info'))
         else:
-            flash('Invalid email or password')
-            return redirect(url_for('index'))
+            print("Password mismatch")
     else:
-        flash('Method not allowed')
-        return redirect(url_for('index'))
+        print("User not found")
+    
+    flash('Invalid email or password')
+    return redirect(url_for('/'))
+
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -194,7 +201,7 @@ def register():
         flash('Email already registered')
         return redirect(url_for('index'))
 
-    new_user = User(name=name, email=email, password=password, age=age, height=height, weight=weight)
+    new_user = User(name=name, email=email, password=password, age=age, height=height, weight=weight)  # Password will be hashed in User model
     db.session.add(new_user)
     db.session.commit()
 
@@ -229,7 +236,7 @@ def update_profile():
         user.age = request.form['age']
         user.height = request.form['height']
         user.weight = request.form['weight']
-        
+
         # Handle profile picture upload
         if 'profile_picture' in request.files:
             file = request.files['profile_picture']
@@ -260,7 +267,6 @@ def update_diet():
         return redirect(url_for('diet'))
     else:
         return redirect(url_for('index'))
-
 
 @app.route('/video_feed')
 def video_feed():
@@ -352,11 +358,12 @@ def generate_pdf():
 def nearest_gym():
     api_key = ''
     return render_template('nearest_gym.html', api_key=api_key)
+
 @app.route('/exercise')
 def exercise():
     return render_template('exercise.html')
-if __name__ == '__main__':
-    # Create all database tables
-    
 
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
