@@ -6,3 +6,5 @@ mediapipe
 numpy 
 Flask-Migrate 
 Werkzeug 
+psycopg2-binary
+gunicorn
