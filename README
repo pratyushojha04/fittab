@@ -1,7 +1,9 @@
 Hi there,
 I am Pratyush ojha 
 
-# FITTAB
+# FITTAB link to live webapp
+
+https://fittab-2.onrender.com
 
 ## About
 Welcome to FITTAB, a personalized fitness assistant designed to optimize your fitness journey. This Flask application offers user registration, login, profile management, and the ability to generate downloadable PDF diet plans based on your personal data.
